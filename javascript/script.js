@@ -108,7 +108,6 @@ function iniciarJuego() {
 }
   
 
-
 //Inicio del juego
 function canvasStars(){
 
@@ -147,7 +146,6 @@ function canvasStars(){
 }
 
 
-
 //Pintar el fondo con las estrellas
 function pintarFondo() {
     //Crear un degradado 
@@ -175,7 +173,6 @@ function pintarFondo() {
 }
 
 
-
 //Pintar la nave
 function pintarNave(){
 
@@ -188,7 +185,6 @@ function pintarNave(){
     };
 
 }
-
 
 
 //Pintar la base
@@ -204,8 +200,6 @@ function pintarBase(){
 }
 
 
-
-
 //Pintar asteroides
 function pintarAsteroides() {
 
@@ -215,11 +209,11 @@ function pintarAsteroides() {
     imagenAsteroide.onload = function() {
         asteroides = [];
 
-        // Calcular posiciones y tamaños
+        // Crear posiciones y tamaños
         for (let i = 0; i < 30; i++) {
             let x = Math.random() * anchoCanvas;
             let y = Math.random() * altoCanvas;
-            let tamanyAsteroide = Math.random() * 60 + 40;
+            let tamanyAsteroide = Math.random() * 50 + 50;
 
             // Comprobar colisión con la NAVE
             if (
@@ -317,6 +311,7 @@ function pintarReloj(){
 
 }
 
+
 //Pintar energía
 function pintarEnergia(){
 
@@ -374,8 +369,8 @@ function pintarEnergia(){
     };
 }
 
-//Pintar portales
 
+//Pintar portales
 function pintarPortales(){
 
     imagenPortal.src = "./images/portal.png"; //Ruta de la imagen
@@ -437,7 +432,6 @@ function pintarPortales(){
 }
 
 
-
 //Mover la nave
 function moverNave(evento) {
     // Borra la nave anterior (pinta el fondo donde estaba)
@@ -483,52 +477,6 @@ function moverNave(evento) {
 
 }
 
-
-
-//Actualizar el contador y detectar si se ha quedado sin movimientos
-function actualizarContador(){
-
-    //Decremento en cada movimiento
-    contador--;
-
-    //Capturo el elemento en el que escribir la puntuación
-    var spanPuntuacion = document.getElementById("puntuacion");
-
-    //Actualizo el contador
-    spanPuntuacion.innerHTML = contador;
-
-    //Compruebo el valor para cambiar el color del texto
-    if (contador < 10){
-        spanPuntuacion.style.color = "red";
-    }else if (contador < 25){
-        spanPuntuacion.style.color = "orange";
-    }else{
-        spanPuntuacion.style.color = "black";
-    }
-
-    //Compruebar si se ha quedado sin puntos para finalizar el juego
-    if (contador == 0){
-        finalizar("🪫¡LOW BATTERY! Te has quedado sin energía.​🪫​");
-    }
-}
-
-//Mostrar mensaje final de victoria o derrota
-function mensajeFinalWin(){
-    const mensajeFinal = document.getElementById("mensajeFinal");
-    mensajeFinal.style.color = "yellowgreen";
-    mensajeFinal.innerHTML = "!ENHORABUENA!";
-    //Cambio el texto del botón de reiniciar
-    document.getElementById("btnReiniciar").innerHTML = "¡JUGAR OTRA VEZ!";
-}
-
-function mensajeFinalLose(){
-    const mensajeFinal = document.getElementById("mensajeFinal");
-    mensajeFinal.style.color = "red";
-    mensajeFinal.innerHTML = "GAME OVER";
-    //Cambio el texto del botón de reiniciar
-    document.getElementById("btnReiniciar").innerHTML = "Reintentar";
-}
-
 //Detecto colisiones con la base, los asteroides o si se sale del mapa
 function detectarColision() {
 
@@ -546,25 +494,6 @@ function detectarColision() {
             finalizar("💥¡Has chocado con un asteroide!");
             return; 
         }
-    }
-
-    //Comprobar colisión con la base
-    const baseX = anchoCanvas - anchoBase;
-    const baseY = altoCanvas - altoBase;
-
-    if (
-        naveX < baseX + anchoBase &&
-        naveX + 80 > baseX &&
-        naveY < baseY + altoBase &&
-        naveY + 80 > baseY
-    ) {
-
-
-        mensajeFinalWin();
-
-        nave.src = "./images/astronauta.png"; //Cambio la imagen de la nave por el astronauta celebrando
-        finalizar("🏁 Has llegado a la base.");
-        return;
     }
 
     //Comprobar si se sale del mapa
@@ -624,29 +553,53 @@ function detectarColision() {
         naveY = portalSalida.posY;
     }
 
+    //Comprobar colisión con la base
+    const baseX = anchoCanvas - anchoBase;
+    const baseY = altoCanvas - altoBase;
+
+    if (
+        naveX < baseX + anchoBase &&
+        naveX + 80 > baseX &&
+        naveY < baseY + altoBase &&
+        naveY + 80 > baseY
+    ) {
+
+        mensajeFinalWin();
+
+        nave.src = "./images/astronauta.png"; //Cambio la imagen de la nave por el astronauta celebrando
+        finalizar("🏁 Has llegado a la base.");
+        return;
+    }
+
 }
 
 
-//Finalizar el juego
-function finalizar(mensaje){
+//Actualizar el contador y detectar si se ha quedado sin movimientos
+function actualizarContador(){
 
-    //Escribo el mensaje en el elemento
-    document.getElementById("mensaje").innerHTML = mensaje;
+    //Decremento en cada movimiento
+    contador--;
 
-    //Bloqueo el movimiento del teclado
-    window.removeEventListener("keydown", moverNave, true);
+    //Capturo el elemento en el que escribir la puntuación
+    var spanPuntuacion = document.getElementById("puntuacion");
 
-    //Paro el temporizador y el cambio de asteroides
-    clearTimeout(stop);
-    clearInterval(intervalAsteroides);
+    //Actualizo el contador
+    spanPuntuacion.innerHTML = contador;
 
-    //Muestro el botón de reiniciar con hidden false
-    document.getElementById("btnReiniciar").hidden = false;
+    //Compruebo el valor para cambiar el color del texto
+    if (contador < 10){
+        spanPuntuacion.style.color = "red";
+    }else if (contador < 25){
+        spanPuntuacion.style.color = "orange";
+    }else{
+        spanPuntuacion.style.color = "black";
+    }
 
-    //Muestro el mensaje final en el canvas
-    document.getElementById("mensajeFinal").hidden = false;
+    //Compruebar si se ha quedado sin puntos para finalizar el juego
+    if (contador == 0){
+        finalizar("🪫¡LOW BATTERY! Te has quedado sin energía.​🪫​");
+    }
 }
-
 
 //Temporizador
 function temporizador(){
@@ -683,7 +636,6 @@ function temporizador(){
     }
 }
 
-
 function rellenaCeros(numero){
     if (numero < 10){
         return "0" + numero;
@@ -691,6 +643,46 @@ function rellenaCeros(numero){
         return numero;
     }
 }
+
+
+//Mostrar mensaje final de victoria o derrota
+function mensajeFinalWin(){
+    const mensajeFinal = document.getElementById("mensajeFinal");
+    mensajeFinal.style.color = "yellowgreen";
+    mensajeFinal.innerHTML = "!ENHORABUENA!";
+    //Cambio el texto del botón de reiniciar
+    document.getElementById("btnReiniciar").innerHTML = "¡JUGAR OTRA VEZ!";
+}
+
+function mensajeFinalLose(){
+    const mensajeFinal = document.getElementById("mensajeFinal");
+    mensajeFinal.style.color = "red";
+    mensajeFinal.innerHTML = "GAME OVER";
+    //Cambio el texto del botón de reiniciar
+    document.getElementById("btnReiniciar").innerHTML = "Reintentar";
+}
+
+
+//Finalizar el juego
+function finalizar(mensaje){
+
+    //Escribo el mensaje en el elemento
+    document.getElementById("mensaje").innerHTML = mensaje;
+
+    //Bloqueo el movimiento del teclado
+    window.removeEventListener("keydown", moverNave, true);
+
+    //Paro el temporizador y el cambio de asteroides
+    clearTimeout(stop);
+    clearInterval(intervalAsteroides);
+
+    //Muestro el botón de reiniciar con hidden false
+    document.getElementById("btnReiniciar").hidden = false;
+
+    //Muestro el mensaje final en el canvas
+    document.getElementById("mensajeFinal").hidden = false;
+}
+
 
 //Reiniciar el juego
 function reiniciarJuego() {
@@ -725,6 +717,7 @@ function reiniciarJuego() {
     // Iniciar de nuevo el juego
     iniciarJuego();
 }
+
 
 //Cambiar asteroides cada cierto tiempo
 function cambiarAsteroides() {
