@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+
+        <title>Space Stars by Javi</title>
+
+        <meta charset="UTF-8">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link rel="stylesheet" type="text/css" href="css/styles.css">
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Momo+Signature&family=Sixtyfour&display=swap" rel="stylesheet">
+
+
+
+    </head>
+
+    <body onload="pantallaInicio()">
+
+        <div id="cabecera">
+
+
+            <h1>Space Stars <br><span id="firma">by Javi García</span></h1>
+            <p id="mensaje">Esquiva los asteroides y alcanza la base antes de quedarte sin tiempo... ¡y sin energía!</p>
+
+            <div id="marcador">
+                <p>🔋Energía: <span id="puntuacion">100</span></p>
+                <p>⏱️​Tiempo: <span id="tiempo"></span></p>
+            </div>
+
+
+        </div>
+
+        <div id="contenedorCanvas">
+            <canvas id="miCanvas" width="1800" height="880"></canvas>
+            <button id="btnIniciar" onclick="iniciarJuego()">Iniciar</button>
+            <button id="btnReiniciar" onclick="reiniciarJuego()" hidden>Reintentar</button>
+            <p id="mensajeFinal" hidden>GAME OVER</p>
+        </div>
+
+        <script type="text/javascript" src="javascript/script.js"></script>
+    </body>
+
+</html>

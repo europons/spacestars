@@ -1,0 +1,136 @@
+body {
+    background-color: #000;
+    font-family: "arial", sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#cabecera{
+    width: 1790px;
+    height: 120px;
+    background-color: yellowgreen;
+    color: white;
+    margin-bottom: 2px;
+    padding: 5px;
+    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#marcador{
+    font-size: 24px;
+    font-weight: bold;
+    margin-right: 20px;
+    padding-left: 20px;
+    display: none;
+    flex-direction: column;
+    gap: 5px;  
+    border-left: 5px solid white;
+}
+
+h1{
+    font-size: 32px;
+    margin-left: 20px;
+    font-family: 'Sixtyfour';
+    text-shadow: 2px 2px 4px #000000;
+
+}
+
+#firma{
+    font-family: 'Momo Signature';
+    text-shadow: 1px 1px 2px #000000;
+}  
+
+#mensaje{
+    font-size: 36px;
+    font-weight: bold;
+    margin-right: 20px;
+}
+
+#puntuacion,#tiempo, #misiles {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+    color: rgb(0, 0, 0);
+
+}
+
+#marcador p {
+    margin: 0;
+    text-align: left;
+}
+
+
+#miCanvas{
+    border: 2px solid yellowgreen;
+    margin: 0 auto;
+    position: relative;
+    display: block;
+}
+
+#btnIniciar {
+    width: 300px;
+    position: absolute;
+    left: 50%;
+    top: 40%;
+    padding: 15px 40px;
+    font-size: 36px;
+    color: white;
+    background: linear-gradient(180deg, #0077ff, #002288);
+    border: 2px solid #00ffff;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 0 10px #00ffff;
+    transform: translate(-50%, -50%);
+}
+
+#btnIniciar:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+    box-shadow: 0 0 20px #00ffff;
+}
+
+#btnReiniciar {
+    width: 300px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    padding: 15px 40px;
+    font-size: 36px;
+    color: white;
+    background: linear-gradient(180deg, #ff7700, #882200);
+    border: 2px solid #ffcc00;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 0 10px #ffcc00;
+    transition: 2s;
+    transform: translate(-50%, -50%);
+}
+
+#btnReiniciar:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+    box-shadow: 0 0 20px #ffcc00;
+}
+
+#contenedorCanvas {
+    position: relative;
+    display: inline-block;
+}
+
+#mensajeFinal {
+    font-family: 'Sixtyfour', sans-serif;
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 100px;
+    color: red;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px #000000;
+    z-index: 10;
+    pointer-events: none;
+    text-align: center;
+}
+
+
