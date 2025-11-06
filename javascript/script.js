@@ -32,7 +32,7 @@ var portalEntrada = { posX: 0, posY: 0, ancho: 100, alto: 100 };
 var portalSalida = { posX: 0, posY: 0, ancho: 100, alto: 100 };
 
 //Constantes de tamaño
-const altoCanvas = 880;
+const altoCanvas = 760;
 const anchoCanvas = 1800;
 const altoBase = 120;
 const anchoBase = 120;
