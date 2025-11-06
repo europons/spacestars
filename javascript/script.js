@@ -81,8 +81,9 @@ function pantallaInicio() {
 
 //Iniciar el juego al pulsar el botón
 function iniciarJuego() {
-    // Ocultar el botón
+    // Ocultar el botón y el marcador
     document.getElementById("btnIniciar").style.display = "none";
+    document.getElementById("marcador").style.display = "none";
 
     // Limpiar el canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -709,12 +710,9 @@ function reiniciarJuego() {
 
     // Reiniciar texto y colores del marcador
     document.getElementById("puntuacion").innerHTML = contador;
-    document.getElementById("puntuacion").style.color = "black";
+    document.getElementById("puntuacion").style.color = "";
     document.getElementById("mensaje").innerHTML = "Esquiva los asteroides y alcanza la base antes de quedarte sin tiempo... ¡y sin energía!";
-    document.getElementById("tiempo").style.color = "black";
-
-    // Reanudar controles
-    window.addEventListener('keydown', moverNave, true);
+    document.getElementById("tiempo").style.color = "";
 
     //Ocultar el botón de reiniciar con hidden false
     var btnReiniciar = document.getElementById("btnReiniciar");
