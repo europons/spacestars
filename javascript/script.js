@@ -1,10 +1,40 @@
+//CONSTANTES GLOBALES//
+
+//Constantes de tamañoS
+const altoCanvas = 765;
+const anchoCanvas = 1805;
+const altoBase = 120;
+const anchoBase = 120;
+const altoAsteroide = 80;
+const anchoAsteroide = 80;
+const altoNave = 80;
+const anchoNave = 80;
+const altoReloj = 50;
+const anchoReloj = 50;
+const altoEnergia = 35;
+const anchoEnergia = 50;
+const altoPortal = 100;
+const anchoPortal = 100;
+
+//Constantes de márgenes
+const margenBorrado = 1; //Margen para borrar los asteroides
+const margenSeparacion = 10; //Margen para que no salgan los objetos pegados al borde
+
+//Constantes de juego
+const aumentoTiempo = 10000; 
+const aumentoEnergia = 20; 
+const velocidadAsteroides = 2500; 
+const contadorInicial = 100; 
+const tiempoInicial = 30000; 
+
+
 //DECLARACIÓN DE VARIABLES GLOBALES//
 
 var canvas, ctx;
 var naveX = 0; //Posición original en x de la nave
 var naveY = 0; //Posición original en y de la nave
-var tiempo = new Date(30000); //Tiempo en milisegundos (30 segundos)
-var contador= 100; //Contador de movimientos
+var tiempo = new Date(tiempoInicial); //Tiempo en milisegundos (30 segundos)
+var contador= contadorInicial; //Contador de movimientos
 
 //Variable para parar el temporizador y el cambio de asteroides
 var stop; 
@@ -30,19 +60,6 @@ var fondoEnergia = new Image();
 var imagenPortal = new Image();
 var portalEntrada = { posX: 0, posY: 0, ancho: 100, alto: 100 };
 var portalSalida = { posX: 0, posY: 0, ancho: 100, alto: 100 };
-
-//Constantes de tamaño
-const altoCanvas = 765;
-const anchoCanvas = 1805;
-const altoBase = 120;
-const anchoBase = 120;
-const altoAsteroide = 80;
-const anchoAsteroide = 80;
-const altoNave = 80;
-const anchoNave = 80;
-
-const margenBorrado = 1; //Margen para borrar los asteroides
-
 
 //FUNCIONES//
 
@@ -194,7 +211,7 @@ function pintarBase(){
 
     //Cuando la imagen esté cargada, la dibujo en el canvas
     imagenBase.onload = function() {  
-        ctx.drawImage(imagenBase, anchoCanvas - anchoBase, altoCanvas - altoBase, anchoBase, altoBase); //Dibujo la base en la esquina inferior derecha con tamaño definido en las constantes
+        ctx.drawImage(imagenBase, anchoCanvas - anchoBase, altoCanvas - altoBase, anchoBase, altoBase); 
     };
 
 }
@@ -213,25 +230,25 @@ function pintarAsteroides() {
         for (let i = 0; i < 30; i++) {
             let x = Math.random() * anchoCanvas;
             let y = Math.random() * altoCanvas;
-            let tamanyAsteroide = Math.random() * 50 + 50;
+            let tamanyAsteroide = Math.random() * 50 + 50; // Tamaño entre 50 y 100 píxeles
 
-            // Comprobar colisión con la NAVE
+            // Comprobar posición para evitar que se pinten encima de la nave
             if (
-                x < naveX + 100 &&
+                x < naveX + altoNave &&
                 x + tamanyAsteroide > naveX &&
-                y < naveY + 100 &&
+                y < naveY + anchoNave &&
                 y + tamanyAsteroide > naveY
             ) {
-                // Desplazar a la derecha de la nave
-                x = naveX + 100;
-                
-                // Si se sale del canvas, desplazar a la izquierda
-                if (x + tamanyAsteroide > anchoCanvas) {
-                    x = naveX - tamanyAsteroide - 20;
+                // Desplazar a la derecha o a la izquierda según convenga
+                if (x < anchoCanvas / 2) {
+                    x = naveX + altoNave + margenSeparacion; 
+                } else {
+                    x = naveX - tamanyAsteroide - margenSeparacion;
                 }
+
             }
 
-            // Comprobar colisión con la BASE
+            // Comprobar posición para evitar que se pinten encima de la base
             if (x + tamanyAsteroide > anchoCanvas - anchoBase && y + tamanyAsteroide > altoCanvas - altoBase) {
                 x -= anchoBase + tamanyAsteroide; 
                 y -= altoBase + tamanyAsteroide;
@@ -277,19 +294,19 @@ function pintarReloj(){
         let y = Math.random() * altoCanvas;  
 
         //Evitar que salgan fuera del canvas
-        if (x > anchoCanvas - 50) {
-            x = anchoCanvas - 100;
+        if (x > anchoCanvas - anchoReloj - margenSeparacion) {
+            x = anchoCanvas - anchoReloj - margenSeparacion;
         }
-        if (x < 8) {
-            x = 50;
+        if (y > altoCanvas - altoReloj) {
+            y = altoCanvas - altoReloj - margenSeparacion ;
         }
-        if (y < 8) {
-            y = 50;
+        if (x < margenSeparacion) {
+            x = margenSeparacion;
         }
-        if (y > altoCanvas - 50) {
-            y = altoCanvas - 100;
+        if (y < margenSeparacion) {
+            y = margenSeparacion;
         }
-        
+
         // Evitar que salgan encima de la nave (zona inicial)
         if (x < anchoNave && y < altoNave) {
             x += altoNave;
@@ -302,11 +319,11 @@ function pintarReloj(){
             y -= altoBase;
         }
 
-        reloj = { posX: x, posY: y, ancho: 50, alto: 50 };
+        reloj = { posX: x, posY: y, ancho: anchoReloj, alto: altoReloj };
 
-        fondoReloj = ctx.getImageData(x, y, 50, 50); //Capturo el fondo que voy a tapar
+        fondoReloj = ctx.getImageData(x, y, anchoReloj+margenBorrado, altoReloj+margenBorrado); //Capturo el fondo que voy a tapar
         
-        ctx.drawImage(imagenReloj, x, y, 50, 50); //Dibujo el reloj en la esquina superior izquierda con tamaño 50x50
+        ctx.drawImage(imagenReloj, x, y, anchoReloj, altoReloj); //Dibujo el reloj en la posición aleatoria
     };
 
 }
@@ -323,117 +340,110 @@ function pintarEnergia(){
         let y = Math.random() * altoCanvas;  
 
         //Evitar que salgan fuera del canvas
-        if (x > anchoCanvas - 50) {
-            x = anchoCanvas - 100;
+        if (x > anchoCanvas - anchoEnergia - margenSeparacion) {
+            x = anchoCanvas - anchoEnergia - margenSeparacion;
+        }
+        if (y > altoCanvas - altoEnergia - margenSeparacion) {
+            y = altoCanvas - altoEnergia - margenSeparacion ;
+        }
+        if (x < margenSeparacion) {
+            x = margenSeparacion;
+        }
+        if (y < margenSeparacion) {
+            y = margenSeparacion;
         }
 
-        if (x < 8) {
-            x = 50;
-        }
-
-        if (y < 8) {
-            y = 50;
-        }
-
-        if (y > altoCanvas - 50) {
-            y = altoCanvas - 100;
-        }
-        
         // Evitar que salgan encima de la nave (zona inicial)
-        if (x < 80 && y < 80) {
-            x += 100;
-            y += 100;
+        if (x < anchoNave && y < altoNave) {
+            x += altoNave;
+            y += anchoNave;
         }
 
         // Evitar que salgan encima de la base (zona final)
         if (x > anchoCanvas - anchoBase && y > altoCanvas - altoBase) {
-            x -= 100; 
-            y -= 100;
+            x -= anchoBase; 
+            y -= altoBase;
         }
 
         //Evitar que salgan encima del reloj
-        const margenReloj = 100;
         if (
-            x + margenReloj < reloj.posX + reloj.ancho - margenReloj &&
-            x + 50 - margenReloj > reloj.posX + margenReloj &&
-            y + margenReloj < reloj.posY + reloj.alto - margenReloj &&
-            y + 50 - margenReloj > reloj.posY + margenReloj
+            x + anchoEnergia + margenSeparacion > reloj.posX &&
+            x < reloj.posX + reloj.ancho + margenSeparacion &&
+            y + altoEnergia + margenSeparacion > reloj.posY &&
+            y < reloj.posY + reloj.alto + margenSeparacion
         ) {
-            x += 100;
-            y += 100;
+            x += anchoReloj + margenSeparacion;
+            y += altoReloj + margenSeparacion;
         }
 
-        energia = { posX: x, posY: y, ancho: 50, alto: 35 };
-        fondoEnergia = ctx.getImageData(x, y, 50, 35); //Capturo el fondo que voy a tapar
-        ctx.drawImage(imagenEnergia, x, y, 50, 35); //Dibujo la energia
+        energia = { posX: x, posY: y, ancho: anchoEnergia, alto: altoEnergia };
+        fondoEnergia = ctx.getImageData(x, y, anchoEnergia, altoEnergia); //Capturo el fondo que voy a tapar
+        ctx.drawImage(imagenEnergia, x, y, anchoEnergia, altoEnergia); //Dibujo la energia
     };
 }
 
 
 //Pintar portales
 function pintarPortales(){
-
     imagenPortal.src = "./images/portal.png"; //Ruta de la imagen
+    
     //Cuando la imagen esté cargada, la dibujo en el canvas
     imagenPortal.onload = function() {
-
         // Portal de ENTRADA → mitad izquierda del canvas
-        let posXEntrada = Math.random() * ((anchoCanvas / 2) - 100);
-        let posYEntrada = Math.random() * (altoCanvas - 100);
-
+        let posXEntrada = Math.random() * ((anchoCanvas / 2) - anchoPortal);
+        let posYEntrada = Math.random() * (altoCanvas - altoPortal);
+        
         // Portal de SALIDA → mitad derecha del canvas
-        let posXSalida = (anchoCanvas / 2) + Math.random() * ((anchoCanvas / 2) - 100);
-        let posYSalida = Math.random() * (altoCanvas - 100);
-
-        //Evitar que salgan fuera del canvas
-        if (posXEntrada > anchoCanvas - 50 && posXSalida > anchoCanvas - 50) {
-            posXEntrada = anchoCanvas - 100;
-            posXSalida = anchoCanvas - 200;
+        let posXSalida = (anchoCanvas / 2) + Math.random() * ((anchoCanvas / 2) - anchoPortal); // ← Cambiado 'ancho' por 'anchoPortal'
+        let posYSalida = Math.random() * (altoCanvas - altoPortal);
+        
+        //Evitar que el portal de ENTRADA salga fuera del canvas
+        if (posXEntrada > anchoCanvas - anchoPortal - margenSeparacion) {
+            posXEntrada = anchoCanvas - anchoPortal - margenSeparacion;
         }
-
-        if (posXEntrada < 8 && posXSalida < 8) {
-            posXEntrada = 50;
-            posXSalida = 150;
+        if (posYEntrada > altoCanvas - altoPortal - margenSeparacion) {
+            posYEntrada = altoCanvas - altoPortal - margenSeparacion;
         }
-
-        if (posYEntrada < 8 && posYSalida < 8) {
-            posYEntrada = 50;
-            posYSalida = 150;
+        if (posXEntrada < margenSeparacion) {
+            posXEntrada = margenSeparacion;
         }
-
-        if (posYEntrada > altoCanvas - 50 && posYSalida > altoCanvas - 50) {
-            posYEntrada = altoCanvas - 100;
-            posYSalida = altoCanvas - 200;
+        if (posYEntrada < margenSeparacion) {
+            posYEntrada = margenSeparacion;
         }
         
-        // Evitar que salgan encima de la nave (zona inicial)
-        if (posXEntrada < 80 && posYEntrada < 80) {
-            posXEntrada += 100;
-            posYEntrada += 100;
+        // Evitar que el portal de ENTRADA salga encima de la nave
+        if (posXEntrada < anchoNave && posYEntrada < altoNave) {
+            posXEntrada += altoNave;
+            posYEntrada += anchoNave;
         }
-
-
-        // Evitar que salgan encima de la base (zona final)
-        if (posXEntrada > anchoCanvas - anchoBase && posYEntrada > altoCanvas - altoBase) {
-            posXEntrada -= 100; 
-            posYEntrada -= 100;
+        
+        //Evitar que el portal de SALIDA salga fuera del canvas
+        if (posXSalida > anchoCanvas - anchoPortal - margenSeparacion) {
+            posXSalida = anchoCanvas - anchoPortal - margenSeparacion;
         }
-
-        portalEntrada = { posX: posXEntrada, posY: posYEntrada, ancho: 100, alto: 100 };
-        portalSalida = { posX: posXSalida, posY: posYSalida, ancho: 100, alto: 100 };
-
-        ctx.drawImage(imagenPortal, posXEntrada, posYEntrada, 100, 100); //Dibujar el portal de entrada
-        ctx.drawImage(imagenPortal, posXSalida, posYSalida, 100, 100); //Dibujar el portal de salida
-
-
+        if (posYSalida > altoCanvas - altoPortal - margenSeparacion) {
+            posYSalida = altoCanvas - altoPortal - margenSeparacion;
+        }
+        
+        // Evitar que el portal de SALIDA salga encima de la base
+        if (posXSalida > anchoCanvas - anchoBase && posYSalida > altoCanvas - altoBase) {
+            posXSalida -= anchoBase;
+            posYSalida -= altoBase;
+        }
+        
+        portalEntrada = { posX: posXEntrada, posY: posYEntrada, ancho: anchoPortal, alto: altoPortal };
+        portalSalida = { posX: posXSalida, posY: posYSalida, ancho: anchoPortal, alto: altoPortal };
+        
+        ctx.drawImage(imagenPortal, posXEntrada, posYEntrada, anchoPortal, altoPortal);
+        ctx.drawImage(imagenPortal, posXSalida, posYSalida, anchoPortal, altoPortal);
     };
-
-
 }
 
 
 //Mover la nave
 function moverNave(evento) {
+    const pixelesMovimiento = 40; //Cantidad de píxeles que se mueve la nave
+
     // Borra la nave anterior (pinta el fondo donde estaba)
     ctx.putImageData(fondoNave, naveX, naveY);
 
@@ -441,25 +451,25 @@ function moverNave(evento) {
         // Izquierda
         case 37:
         case 65:
-            naveX -= 40;
+            naveX -= pixelesMovimiento;
             detectarColision();
             break;
         // Derecha
         case 39:
         case 68:
-            naveX += 40;
+            naveX += pixelesMovimiento;
             detectarColision();
             break;
         // Arriba
         case 38:
         case 87:
-            naveY -= 40;
+            naveY -= pixelesMovimiento;
             detectarColision();
             break;
         // Abajo
         case 40:
         case 83:
-            naveY += 40;
+            naveY += pixelesMovimiento;
             detectarColision();
             break;
         default:
@@ -470,10 +480,10 @@ function moverNave(evento) {
     actualizarContador();
 
     // Guarda el nuevo fondo que va debajo de la nave
-    fondoNave = ctx.getImageData(naveX, naveY, 80, 80);
+    fondoNave = ctx.getImageData(naveX, naveY, anchoNave+margenBorrado, altoNave+margenBorrado);
 
     // Dibuja la nave en su nueva posición
-    ctx.drawImage(nave, naveX, naveY, 80, 80);
+    ctx.drawImage(nave, naveX, naveY, anchoNave, altoNave);
 
 }
 
@@ -482,14 +492,17 @@ function detectarColision() {
 
     //Comprobar colisión con cada asteroide
     for (let asteroide of asteroides) {
+        // Margen de tolerancia para hacer la colisión más precisa (en píxeles)
+        const margenColisionAsteroide = 7; 
+        
         if (
-            naveX < asteroide.posX + asteroide.ancho &&
-            naveX + 80 > asteroide.posX &&
-            naveY < asteroide.posY + asteroide.alto &&
-            naveY + 80 > asteroide.posY
+            naveX + margenColisionAsteroide < asteroide.posX + asteroide.ancho - margenColisionAsteroide &&
+            naveX + anchoNave - margenColisionAsteroide > asteroide.posX + margenColisionAsteroide &&
+            naveY + margenColisionAsteroide < asteroide.posY + asteroide.alto - margenColisionAsteroide &&
+            naveY + altoNave - margenColisionAsteroide > asteroide.posY + margenColisionAsteroide
         ) {
             //Cambio la imagen de la nave por la rota
-            nave.src = "./images/naveRota.png"; //Ruta de la imagen
+            nave.src = "./images/naveRota.png";
             mensajeFinalLose();
             finalizar("💥¡Has chocado con un asteroide!");
             return; 
@@ -498,8 +511,8 @@ function detectarColision() {
 
     //Comprobar si se sale del mapa
     if (
-        naveX < 0 || naveX + 80 > anchoCanvas ||
-        naveY < 0 || naveY + 80 > altoCanvas
+        naveX < 0 || naveX + anchoNave > anchoCanvas ||
+        naveY < 0 || naveY + altoNave > altoCanvas
     ) {
         mensajeFinalLose();
         finalizar("🚫 ¡Te has salido del espacio!");
@@ -509,16 +522,16 @@ function detectarColision() {
     //Comprobar colisión con el reloj
     if (
         naveX < reloj.posX + reloj.ancho &&
-        naveX + 80 > reloj.posX &&
+        naveX + anchoReloj > reloj.posX &&
         naveY < reloj.posY + reloj.alto &&
-        naveY + 80 > reloj.posY
+        naveY + altoReloj > reloj.posY
     ) {
         //Desaparecer el reloj del canvas
         ctx.putImageData(fondoReloj, reloj.posX, reloj.posY);
         //Reiniciar la variable del reloj para que no vuelva a colisionar
         reloj = { posX: -100, posY: -100, ancho: 0, alto: 0 };
         // Aumentar tiempo en 10 segundos
-        var ms = tiempo.getMilliseconds() + 10000;
+        var ms = tiempo.getMilliseconds() + aumentoTiempo;
         tiempo.setMilliseconds(ms); 
     }
 
@@ -534,7 +547,7 @@ function detectarColision() {
         //Reiniciar la variable de la energía para que no vuelva a colisionar
         energia = { posX: -100, posY: -100, ancho: 0, alto: 0 };
         // Aumentar movimientos en 20
-        contador += 20;
+        contador += aumentoEnergia;
         //Actualizo el contador en pantalla
         var spanPuntuacion = document.getElementById("puntuacion");
         spanPuntuacion.innerHTML = contador;
@@ -542,11 +555,13 @@ function detectarColision() {
     }
 
     //Comprobar colisión con el portal de entrada
+    const margenColisionPortal = 10; // Opcional: añadir tolerancia
+
     if (
-        naveX < portalEntrada.posX + portalEntrada.ancho &&
-        naveX + 80 > portalEntrada.posX &&
-        naveY < portalEntrada.posY + portalEntrada.alto &&
-        naveY + 80 > portalEntrada.posY
+        naveX + margenColisionPortal < portalEntrada.posX + portalEntrada.ancho - margenColisionPortal &&
+        naveX + anchoNave - margenColisionPortal > portalEntrada.posX + margenColisionPortal &&  // ← Corregido: anchoNave
+        naveY + margenColisionPortal < portalEntrada.posY + portalEntrada.alto - margenColisionPortal &&
+        naveY + altoNave - margenColisionPortal > portalEntrada.posY + margenColisionPortal      // ← Corregido: altoNave
     ) {
         // Teletransportar la nave al portal de salida
         naveX = portalSalida.posX;
@@ -559,14 +574,12 @@ function detectarColision() {
 
     if (
         naveX < baseX + anchoBase &&
-        naveX + 80 > baseX &&
+        naveX + anchoNave > baseX &&  
         naveY < baseY + altoBase &&
-        naveY + 80 > baseY
+        naveY + altoNave > baseY      
     ) {
-
         mensajeFinalWin();
-
-        nave.src = "./images/astronauta.png"; //Cambio la imagen de la nave por el astronauta celebrando
+        nave.src = "./images/astronauta.png";
         finalizar("🏁 Has llegado a la base.");
         return;
     }
@@ -688,13 +701,19 @@ function finalizar(mensaje){
 function reiniciarJuego() {
     // Detener temporizador y el cambio de asteroides
     clearTimeout(stop);
-    clearInterval(intervalAsteroides);
+    if (intervalAsteroides) {  
+        clearInterval(intervalAsteroides);
+        intervalAsteroides = null;  // Resetear la variable si existe el intervalo
+    }
+    
+    // Quitar el evento del teclado por si acaso
+    window.removeEventListener('keydown', moverNave, true);
 
     // Reiniciar variables
     naveX = 0;
     naveY = 0;
-    contador = 100;
-    tiempo = new Date(30000);
+    contador = contadorInicial;
+    tiempo = new Date(tiempoInicial);
     asteroides = [];
 
     // Limpiar el canvas
@@ -721,18 +740,21 @@ function reiniciarJuego() {
 
 //Cambiar asteroides cada cierto tiempo
 function cambiarAsteroides() {
+    // Limpiar el intervalo anterior si existe
+    if (intervalAsteroides) {
+        clearInterval(intervalAsteroides);
+    }
+    
     intervalAsteroides = setInterval(() => {
         for (let asteroide of asteroides) {
             // Restaurar el fondo original de este asteroide
             ctx.putImageData(asteroide.fondo, asteroide.posX, asteroide.posY);
         }
-
+        
         // Esperar un momento para que el canvas se limpie
         setTimeout(() => {
             asteroides = [];
             pintarAsteroides();
         }, 50);
-
-    }, 2500); // Cambiar cada 2.5 segundos
-
+    }, velocidadAsteroides);
 }
