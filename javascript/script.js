@@ -32,8 +32,8 @@ var portalEntrada = { posX: 0, posY: 0, ancho: 100, alto: 100 };
 var portalSalida = { posX: 0, posY: 0, ancho: 100, alto: 100 };
 
 //Constantes de tamaño
-const altoCanvas = 760;
-const anchoCanvas = 1800;
+const altoCanvas = 765;
+const anchoCanvas = 1805;
 const altoBase = 120;
 const anchoBase = 120;
 const altoAsteroide = 80;
@@ -511,6 +511,22 @@ function actualizarContador(){
     }
 }
 
+//Mostrar mensaje final de victoria o derrota
+function mensajeFinalWin(){
+    const mensajeFinal = document.getElementById("mensajeFinal");
+    mensajeFinal.style.color = "yellowgreen";
+    mensajeFinal.innerHTML = "!ENHORABUENA!";
+    //Cambio el texto del botón de reiniciar
+    document.getElementById("btnReiniciar").innerHTML = "¡JUGAR OTRA VEZ!";
+}
+
+function mensajeFinalLose(){
+    const mensajeFinal = document.getElementById("mensajeFinal");
+    mensajeFinal.style.color = "red";
+    mensajeFinal.innerHTML = "GAME OVER";
+    //Cambio el texto del botón de reiniciar
+    document.getElementById("btnReiniciar").innerHTML = "Reintentar";
+}
 
 //Detecto colisiones con la base, los asteroides o si se sale del mapa
 function detectarColision() {
@@ -525,8 +541,8 @@ function detectarColision() {
         ) {
             //Cambio la imagen de la nave por la rota
             nave.src = "./images/naveRota.png"; //Ruta de la imagen
-
-            finalizar("💥 ¡Has chocado con un asteroide!");
+            mensajeFinalLose();
+            finalizar("💥¡Has chocado con un asteroide!");
             return; 
         }
     }
@@ -541,17 +557,11 @@ function detectarColision() {
         naveY < baseY + altoBase &&
         naveY + 80 > baseY
     ) {
-        let mensajeFinal = document.getElementById("mensajeFinal");
-        mensajeFinal.style.color = "yellowgreen";
-        mensajeFinal.style.textShadow = "2px 2px 4px #000000";
-        mensajeFinal.style.fontSize = "80px";
-        mensajeFinal.innerHTML = "!ENHORABUENA!";
+
+
+        mensajeFinalWin();
+
         nave.src = "./images/astronauta.png"; //Cambio la imagen de la nave por el astronauta celebrando
-
-        //Cambio el texto del botón de reiniciar
-        document.getElementById("btnReiniciar").innerHTML = "¡JUGAR OTRA VEZ!";
-        document.getElementById("btnReiniciar").style.fontWeight = "bold";
-
         finalizar("🏁 Has llegado a la base.");
         return;
     }
@@ -561,6 +571,7 @@ function detectarColision() {
         naveX < 0 || naveX + 80 > anchoCanvas ||
         naveY < 0 || naveY + 80 > altoCanvas
     ) {
+        mensajeFinalLose();
         finalizar("🚫 ¡Te has salido del espacio!");
         return;
     }
@@ -631,7 +642,7 @@ function finalizar(mensaje){
     //Muestro el botón de reiniciar con hidden false
     document.getElementById("btnReiniciar").hidden = false;
 
-    //Muestro game over o enhorabuena en el canvas
+    //Muestro el mensaje final en el canvas
     document.getElementById("mensajeFinal").hidden = false;
 }
 
@@ -663,6 +674,7 @@ function temporizador(){
     //Compruebo si llega a 0 para finalizar el juego o continuar
     if (tiempo.getSeconds() <= 0){
         var mensaje = "¡Lo siento! Se ha terminado el tiempo.";
+        mensajeFinalLose();
         finalizar(mensaje);
     }else{
         //Hago un loop para que se ejecute cada 500ms
