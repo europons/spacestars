@@ -27,7 +27,6 @@ const velocidadAsteroides = 2500;
 const contadorInicial = 100; 
 const tiempoInicial = 30000; 
 
-
 //DECLARACIÓN DE VARIABLES GLOBALES//
 
 var canvas, ctx;
@@ -42,7 +41,6 @@ var intervalAsteroides;
 
 //Variables para las imágenes y objetos del juego
 var nave = new Image(); 
-var fondoNave = new Image();
 
 var imagenBase = new Image(); 
 
@@ -51,11 +49,9 @@ var asteroides = [];
 
 var imagenReloj = new Image();
 var reloj = { posX: 0, posY: 0, ancho: 50, alto: 50 };
-var fondoReloj = new Image();
 
 var imagenEnergia = new Image();
 var energia = { posX: 0, posY: 0, ancho: 50, alto: 50 };
-var fondoEnergia = new Image();
 
 var imagenPortal = new Image();
 var portalEntrada = { posX: 0, posY: 0, ancho: 100, alto: 100 };
@@ -123,7 +119,7 @@ function iniciarJuego() {
         }
     }, 1000); // Intervalo de 1 segundo
 }
-  
+
 
 //Inicio del juego
 function canvasStars(){
@@ -150,20 +146,20 @@ function canvasStars(){
     pintarPortales();
     
     setTimeout(pintarReloj, 100);
-    
+
     setTimeout(pintarEnergia, 100);
-    
+
     setTimeout(pintarAsteroides, 500);
 
     temporizador();
-    
+
     setTimeout(cambiarAsteroides, 1000);
 
     window.addEventListener('keydown', moverNave, true);//Evento para mover la nave con las flechas del teclado o WASD
 }
 
 
-//Pintar el fondo con las estrellas
+//Pintar el fondo (solo degradado, he eliminado el pintado de estrellas por facilidad)
 function pintarFondo() {
     //Crear un degradado 
     const gradiente = ctx.createLinearGradient(0, 0, 0, altoCanvas);
@@ -174,19 +170,48 @@ function pintarFondo() {
     //Rellenar el fondo del canvas con el degradado
     ctx.fillStyle = gradiente;
     ctx.fillRect(0, 0, anchoCanvas, altoCanvas);
+}
 
-    //Crear la imagen de la estrella
-    const imagenEstrella = new Image();
-    imagenEstrella.src = "./images/estrella.png";
 
-    //Cuando la estrella esté cargada, dibujar las estrellas en posiciones aleatorias
-    imagenEstrella.onload = function() {
-        for (let i = 0; i < 100; i++) {
-            const x = Math.random() * anchoCanvas;
-            const y = Math.random() * altoCanvas;
-            ctx.drawImage(imagenEstrella, x, y, 20, 20);//Estrellas de 20x20 px
-        }
-    };
+// Función para "limpiar" zonas del canvas usando el mismo degradado del fondo
+function limpiarZona(x, y, ancho, alto) {
+    const gradiente = ctx.createLinearGradient(0, 0, 0, altoCanvas);
+    gradiente.addColorStop(0, "#808080");
+    gradiente.addColorStop(0.5, "#333333");
+    gradiente.addColorStop(1, "#000000");
+
+    ctx.fillStyle = gradiente;
+    ctx.fillRect(x, y, ancho, alto);
+}
+
+// Redibujar elementos estáticos en sus posiciones actuales
+function dibujarBase() {
+    ctx.drawImage(imagenBase, anchoCanvas - anchoBase, altoCanvas - altoBase, anchoBase, altoBase);
+}
+
+function dibujarPortales() {
+    if (portalEntrada && portalEntrada.ancho && portalEntrada.alto) {
+        ctx.drawImage(imagenPortal, portalEntrada.posX, portalEntrada.posY, portalEntrada.ancho, portalEntrada.alto);
+    }
+    if (portalSalida && portalSalida.ancho && portalSalida.alto) {
+        ctx.drawImage(imagenPortal, portalSalida.posX, portalSalida.posY, portalSalida.ancho, portalSalida.alto);
+    }
+}
+
+function dibujarReloj() {
+    if (reloj.ancho > 0 && reloj.alto > 0) {
+        ctx.drawImage(imagenReloj, reloj.posX, reloj.posY, reloj.ancho, reloj.alto);
+    }
+}
+
+function dibujarEnergia() {
+    if (energia.ancho > 0 && energia.alto > 0) {
+        ctx.drawImage(imagenEnergia, energia.posX, energia.posY, energia.ancho, energia.alto);
+    }
+}
+
+function dibujarNave() {
+    ctx.drawImage(nave, naveX, naveY, anchoNave, altoNave);
 }
 
 
@@ -197,7 +222,6 @@ function pintarNave(){
 
     //Cuando la imagen esté cargada, se dibuja en el canvas
     nave.onload = function() {  
-        fondoNave = ctx.getImageData(naveX, naveY, altoNave, anchoNave); //Capturo el fondo que voy a tapar
         ctx.drawImage(nave, naveX, naveY, altoNave, anchoNave); //Dibujo la nave en la esquina superior izquierda (0,0)
     };
 
@@ -259,19 +283,8 @@ function pintarAsteroides() {
                 posX: x, 
                 posY: y, 
                 ancho: tamanyAsteroide, 
-                alto: tamanyAsteroide,
-                fondo: null 
+                alto: tamanyAsteroide
             });
-        }
-
-        // Capturar todos los fondos 
-        for (let asteroide of asteroides) {
-            asteroide.fondo = ctx.getImageData(
-                asteroide.posX - margenBorrado, 
-                asteroide.posY - margenBorrado, 
-                asteroide.ancho + (margenBorrado * 2), 
-                asteroide.alto + (margenBorrado * 2)
-            );
         }
 
         // Dibujar todos los asteroides
@@ -320,9 +333,6 @@ function pintarReloj(){
         }
 
         reloj = { posX: x, posY: y, ancho: anchoReloj, alto: altoReloj };
-
-        fondoReloj = ctx.getImageData(x, y, anchoReloj+margenBorrado, altoReloj+margenBorrado); //Capturo el fondo que voy a tapar
-        
         ctx.drawImage(imagenReloj, x, y, anchoReloj, altoReloj); //Dibujo el reloj en la posición aleatoria
     };
 
@@ -333,6 +343,7 @@ function pintarReloj(){
 function pintarEnergia(){
 
     imagenEnergia.src = "./images/energia.png"; //Ruta de la imagen
+
     //Cuando la imagen esté cargada, la dibujo en el canvas
     imagenEnergia.onload = function() {
         // Posiciones aleatorias dentro del canvas
@@ -377,7 +388,6 @@ function pintarEnergia(){
         }
 
         energia = { posX: x, posY: y, ancho: anchoEnergia, alto: altoEnergia };
-        fondoEnergia = ctx.getImageData(x, y, anchoEnergia, altoEnergia); //Capturo el fondo que voy a tapar
         ctx.drawImage(imagenEnergia, x, y, anchoEnergia, altoEnergia); //Dibujo la energia
     };
 }
@@ -394,7 +404,7 @@ function pintarPortales(){
         let posYEntrada = Math.random() * (altoCanvas - altoPortal);
         
         // Portal de SALIDA → mitad derecha del canvas
-        let posXSalida = (anchoCanvas / 2) + Math.random() * ((anchoCanvas / 2) - anchoPortal); // ← Cambiado 'ancho' por 'anchoPortal'
+        let posXSalida = (anchoCanvas / 2) + Math.random() * ((anchoCanvas / 2) - anchoPortal);
         let posYSalida = Math.random() * (altoCanvas - altoPortal);
         
         //Evitar que el portal de ENTRADA salga fuera del canvas
@@ -444,8 +454,18 @@ function pintarPortales(){
 function moverNave(evento) {
     const pixelesMovimiento = 40; //Cantidad de píxeles que se mueve la nave
 
-    // Borra la nave anterior (pinta el fondo donde estaba)
-    ctx.putImageData(fondoNave, naveX, naveY);
+    // Guardar la posición anterior de la nave
+    const naveXAnterior = naveX;
+    const naveYAnterior = naveY;
+
+    // Borrar la zona donde estaba la nave usando el degradado del fondo
+    limpiarZona(naveXAnterior, naveYAnterior, anchoNave + margenBorrado, altoNave + margenBorrado);
+
+    // Redibujar todos los elementos por si han sido tapados
+    dibujarBase();
+    dibujarPortales();
+    dibujarReloj();
+    dibujarEnergia();
 
     switch(evento.keyCode) {
         // Izquierda
@@ -478,9 +498,6 @@ function moverNave(evento) {
 
     // Actualiza el contador
     actualizarContador();
-
-    // Guarda el nuevo fondo que va debajo de la nave
-    fondoNave = ctx.getImageData(naveX, naveY, anchoNave+margenBorrado, altoNave+margenBorrado);
 
     // Dibuja la nave en su nueva posición
     ctx.drawImage(nave, naveX, naveY, anchoNave, altoNave);
@@ -527,7 +544,7 @@ function detectarColision() {
         naveY + altoReloj > reloj.posY
     ) {
         //Desaparecer el reloj del canvas
-        ctx.putImageData(fondoReloj, reloj.posX, reloj.posY);
+        limpiarZona(reloj.posX, reloj.posY, reloj.ancho + margenBorrado, reloj.alto + margenBorrado);
         //Reiniciar la variable del reloj para que no vuelva a colisionar
         reloj = { posX: -100, posY: -100, ancho: 0, alto: 0 };
         // Aumentar tiempo en 10 segundos
@@ -543,7 +560,7 @@ function detectarColision() {
         naveY + 80 > energia.posY
     ) {
         //Desaparecer la energía del canvas
-        ctx.putImageData(fondoEnergia, energia.posX, energia.posY);
+        limpiarZona(energia.posX, energia.posY, energia.ancho + margenBorrado, energia.alto + margenBorrado);
         //Reiniciar la variable de la energía para que no vuelva a colisionar
         energia = { posX: -100, posY: -100, ancho: 0, alto: 0 };
         // Aumentar movimientos en 20
@@ -559,9 +576,9 @@ function detectarColision() {
 
     if (
         naveX + margenColisionPortal < portalEntrada.posX + portalEntrada.ancho - margenColisionPortal &&
-        naveX + anchoNave - margenColisionPortal > portalEntrada.posX + margenColisionPortal &&  // ← Corregido: anchoNave
+        naveX + anchoNave - margenColisionPortal > portalEntrada.posX + margenColisionPortal &&
         naveY + margenColisionPortal < portalEntrada.posY + portalEntrada.alto - margenColisionPortal &&
-        naveY + altoNave - margenColisionPortal > portalEntrada.posY + margenColisionPortal      // ← Corregido: altoNave
+        naveY + altoNave - margenColisionPortal > portalEntrada.posY + margenColisionPortal
     ) {
         // Teletransportar la nave al portal de salida
         naveX = portalSalida.posX;
@@ -725,7 +742,7 @@ function reiniciarJuego() {
     document.getElementById("mensaje").innerHTML = "Esquiva los asteroides y alcanza la base antes de quedarte sin tiempo... ¡y sin energía!";
     document.getElementById("tiempo").style.color = "";
 
-    //Ocultar el botón de reiniciar con hidden false
+    //Ocultar el botón de reiniciar con hidden true
     var btnReiniciar = document.getElementById("btnReiniciar");
     btnReiniciar.hidden = true;
 
@@ -746,12 +763,24 @@ function cambiarAsteroides() {
     }
     
     intervalAsteroides = setInterval(() => {
+        // Limpiar la zona donde estaban los asteroides anteriores
         for (let asteroide of asteroides) {
-            // Restaurar el fondo original de este asteroide
-            ctx.putImageData(asteroide.fondo, asteroide.posX, asteroide.posY);
+            limpiarZona(
+                asteroide.posX - margenBorrado,
+                asteroide.posY - margenBorrado,
+                asteroide.ancho + (margenBorrado * 2),
+                asteroide.alto + (margenBorrado * 2)
+            );
         }
+
+        // Redibujar todos los elementos
+        dibujarBase();
+        dibujarPortales();
+        dibujarReloj();
+        dibujarEnergia();
+        dibujarNave();
         
-        // Esperar un momento para que el canvas se limpie
+        // Esperar un momento para que el canvas se "limpie" y dibujar nuevos asteroides
         setTimeout(() => {
             asteroides = [];
             pintarAsteroides();
